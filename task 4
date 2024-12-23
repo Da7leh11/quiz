@@ -1,0 +1,19 @@
+-- Query to include the category of each search term using a JOIN.
+SELECT
+  t.refresh_date AS Day,
+  t.term AS Top_Term,
+  t.rank,
+  c.category AS Term_Category
+FROM `bigquery-public-data.google_trends.top_terms` t
+JOIN `bigquery-public-data.google_trends.term_categories` c
+  ON t.term = c.term
+WHERE
+  t.rank <= 3
+  -- Include terms ranked in the top 3.
+  AND t.region = 'GB'
+  -- Filter to the UK region (region code: GB).
+  AND t.refresh_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)
+  -- Filter to the last month.
+GROUP BY Day, Top_Term, t.rank, Term_Category
+ORDER BY Day DESC, t.rank
+  -- Show the days in reverse chronological order, sorted by rank.
