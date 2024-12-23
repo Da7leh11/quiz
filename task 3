@@ -1,0 +1,17 @@
+-- Query to filter search terms specific to the UK region.
+SELECT
+  refresh_date AS Day,
+  term AS Top_Term,
+  rank,
+  region
+FROM `bigquery-public-data.google_trends.top_terms`
+WHERE
+  rank <= 3
+  -- Include terms ranked in the top 3.
+  AND region = 'GB'
+  -- Filter to the UK region (region code: GB).
+  AND refresh_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)
+  -- Filter to the last month.
+GROUP BY Day, Top_Term, rank, region
+ORDER BY Day DESC, rank
+  -- Show the days in reverse chronological order, sorted by rank.
