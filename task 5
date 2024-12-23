@@ -1,0 +1,15 @@
+-- Query to group terms by the week they appeared as top terms.
+SELECT
+  FORMAT_TIMESTAMP('%Y-%W', TIMESTAMP(refresh_date)) AS Week,
+  ARRAY_AGG(STRUCT(term, rank) ORDER BY rank) AS Weekly_Top_Terms
+FROM `bigquery-public-data.google_trends.top_terms`
+WHERE
+  rank <= 3
+  -- Include terms ranked in the top 3.
+  AND region = 'GB'
+  -- Filter to the UK region (region code: GB).
+  AND refresh_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)
+  -- Filter to the last month.
+GROUP BY Week
+ORDER BY Week DESC
+  -- Show the weeks in reverse chronological order.
